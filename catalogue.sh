@@ -15,6 +15,7 @@
  N="\e[0m"
 
  SCRIPT_DIR=$PWD
+ MONGODB_HOST="mongodb.dev88s.online"
   
 # Root User Validation
 # =============================
@@ -88,5 +89,20 @@ VALIDATE $? "enable catalogue"
 
 systemctl start catalogue &>>LOGS_FILE
 VALIDATE $? "start catalogue server"
+
+cp $SCRIPT_DIR/mongo.repo /etc/yum.repos.d/mongo.repo
+dnf install mongodb-mongosh -y
+
+INDEX=$mongosh --host $MONGODB_HOST --quiet --eval 'db.getmongo().getDBNames().indexof("catalogue")'
+
+if [ $INDEX -le 0 ]; then
+   mongosh --host $MONGODB_HOST </app/db/master-data.js
+   VALIDATE $? "products loading"
+else 
+   echo -e "products already loaded ---$Y skipping $N "
+fi
+
+systemctl restart catalogue &>>$LOGS_FILE
+VALIDATE $? "restarting the catalogue"
 
 
