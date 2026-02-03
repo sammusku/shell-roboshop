@@ -80,11 +80,14 @@ VALIDATE $? "enable and start shipping"
 dnf install mysql -y 
 VALIDATE $? "installing mysql client"
 
-mysql -h mysql.dev88s.online -uroot -pRoboShop@1 < /app/db/schema.sql
-mysql -h mysql.dev88s.online -uroot -pRoboShop@1 < /app/db/app-user.sql 
-mysql -h mysql.dev88s.online -uroot -pRoboShop@1 < /app/db/master-data.sql
-VALIDATE $? "loading the schema,app data and master data for shipping application"
-
+if [ $? -ne 0 ]; then
+    mysql -h mysql.dev88s.online -uroot -pRoboShop@1 < /app/db/schema.sql &>>$LOGS_FILE
+    mysql -h mysql.dev88s.online -uroot -pRoboShop@1 < /app/db/app-user.sql  &>>$LOGS_FILE
+    mysql -h mysql.dev88s.online -uroot -pRoboShop@1 < /app/db/master-data.sql &>>$LOGS_FILE
+    VALIDATE $? "loading the schema,app data and master data for shipping application"
+else
+   echo -e "Data already available....$Y skipping $N"
+fi
 systemctl restart shipping
 VALIDATE $? "restarting the shipping services"
 
