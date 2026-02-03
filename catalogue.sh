@@ -91,10 +91,10 @@ VALIDATE $? "enable catalogue"
 systemctl start catalogue &>>LOGS_FILE
 VALIDATE $? "start catalogue server"
 
-cp $SCRIPT_DIR/mongo.repo /etc/yum.repos.d/mongo.repo
+cp $SCRIPT_DIR/mongo.repo /etc/yum.repos.d/mongo.repo 
 dnf install mongodb-mongosh -y
 
-INDEX=$mongosh --host $MONGODB_HOST --quiet --eval 'db.getmongo().getDBNames().indexof("catalogue")'
+INDEX=$(mongosh --host $MONGODB_HOST --quiet --eval 'db.getmongo().getDBNames().indexof("catalogue")')
 
 if [ $INDEX -le 0 ]; then
    mongosh --host $MONGODB_HOST </app/db/master-data.js
