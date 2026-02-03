@@ -69,7 +69,7 @@ VALIDATE $? "install and build java dependencies"
 mv target/shipping-1.0.jar shipping.jar 
 VALIDATE $? "moving and remaning shipping"
 
-cp '$SCRIPT_DIR/shipping.service' /etc/systemd/system/shipping.service  &>>$LOGS_FILE
+cp $SCRIPT_DIR/shipping.service /etc/systemd/system/shipping.service  &>>$LOGS_FILE
 VALIDATE $? "copying systemctl services"
 
 systemctl daemon-reload
