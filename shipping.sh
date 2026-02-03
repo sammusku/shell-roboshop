@@ -47,7 +47,7 @@ id roboshop &>>$LOGS_FILE
 if [ $? -ne 0 ]; then
    useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop
    VALIDATE $? "Creating system user"
-   echo " $G Created the roboshop user $N "
+   echo "$G Created the roboshop user $N"
 else
    echo -e " roboshop user already exist in the system..$Y skipping $N "
 fi
@@ -69,7 +69,7 @@ VALIDATE $? "install and build java dependencies"
 mv target/shipping-1.0.jar shipping.jar 
 VALIDATE $? "moving and remaning shipping"
 
-cp 'SCRIPT_DIR/shipping.service' /etc/systemd/system/shipping.service  &>>$LOGS_FILE
+cp '$SCRIPT_DIR/shipping.service' /etc/systemd/system/shipping.service  &>>$LOGS_FILE
 VALIDATE $? "copying systemctl services"
 
 systemctl daemon-reload
