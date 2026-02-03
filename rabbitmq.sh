@@ -14,6 +14,8 @@
  Y="\e[33m"
  N="\e[0m"
 
+ SCRIPT_DIR=$PWD
+
  
   
 # Root User Validation
