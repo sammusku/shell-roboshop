@@ -22,13 +22,15 @@
 # Check if the script is being run as root user
 # If not, print an error message and exit
 
+# Create the logs directory if it does not already exist
+mkdir -p $LOGS_FOLDER
+
 if [ $USER_ID -ne 0 ]; then
  echo -e "$R please use root user to run the script $N" | tee -a $LOGS_FILE
  exit 1
 fi
 
-# Create the logs directory if it does not already exist
-mkdir -p $LOGS_FOLDER
+
 
 VALIDATE() {
     if [ $1 -ne 0 ]; then
@@ -88,16 +90,16 @@ VALIDATE $? "reloading the changes"
 systemctl enable catalogue &>>$LOGS_FILE
 VALIDATE $? "enable catalogue"
 
-systemctl start catalogue &>>LOGS_FILE
+systemctl start catalogue &>>$LOGS_FILE
 VALIDATE $? "start catalogue server"
 
-cp $SCRIPT_DIR/mongo.repo /etc/yum.repos.d/mongo.repo 
+cp $SCRIPT_DIR/mongo.repo /etc/yum.repos.d/mongo.repo  &>>$LOGS_FILE
 dnf install mongodb-mongosh -y
 
-INDEX=$(mongosh --host $MONGODB_HOST --quiet --eval 'db.getmongo().getDBNames().indexof("catalogue")')
+INDEX=$(mongosh --host $MONGODB_HOST --quiet --eval 'db.getMongo().getDBNames().indexof("catalogue")')
 
-if [ $INDEX -le 0 ]; then
-   mongosh --host $MONGODB_HOST </app/db/master-data.js
+if [ $INDEX -eq -1 ]; then
+   mongosh --host $MONGODB_HOST </app/db/master-data.js &>>$LOGS_FILE
    VALIDATE $? "products loading"
 else 
    echo -e "products already loaded ---$Y skipping $N "
