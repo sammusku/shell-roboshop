@@ -78,7 +78,7 @@ VALIDATE $? "removing already existed data from app"
 unzip /tmp/catalogue.zip &>>$LOGS_FILE
 VALIDATE $? "unzip catalogue data from temp directory to app directory"
 
-npm install 
+npm install  &>>$LOGS_FILE
 VALIDATE $? "installing the nodejs dependencies"
 
 cp $SCRIPT_DIR/catalogue.service /etc/systemd/system/catalogue.service
@@ -94,9 +94,10 @@ systemctl start catalogue &>>$LOGS_FILE
 VALIDATE $? "start catalogue server"
 
 cp $SCRIPT_DIR/mongo.repo /etc/yum.repos.d/mongo.repo  &>>$LOGS_FILE
-dnf install mongodb-mongosh -y
+dnf install mongodb-mongosh -y &>>$LOGS_FILE
 
-INDEX=$(mongosh --host $MONGODB_HOST --quiet --eval 'db.getMongo().getDBNames().indexof("catalogue")')
+INDEX=$(mongosh --host "$MONGODB_HOST" --quiet \
+  --eval 'db.getMongo().getDBNames().indexOf("catalogue")')
 
 if [ $INDEX -eq -1 ]; then
    mongosh --host $MONGODB_HOST </app/db/master-data.js &>>$LOGS_FILE
